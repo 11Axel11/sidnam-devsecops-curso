@@ -1,0 +1,78 @@
+# Coolify Docker Compose resource. Assign HTTPS domain only to web, internal port 8080.
+# Image references must be immutable ghcr.io/...@sha256:... values from the publishing workflow.
+x-backend-env: &backend-env
+  NODE_ENV: production
+  APP_ENV: staging
+  APP_ORIGIN: ${APP_ORIGIN:?HTTPS staging origin required}
+  PORT: '3000'
+  DB_HOST: mysql
+  DB_PORT: '3306'
+  DB_USER: sidnam_staging
+  DB_PASS: ${DB_PASS:?required}
+  DB_NAME: sidnam_staging
+  DB_SYNCHRONIZE: 'false'
+  JWT_SECRET: ${JWT_SECRET:?required}
+  JWT_VERIFICATION_TOKEN_SECRET: ${JWT_VERIFICATION_TOKEN_SECRET:?required}
+  JWT_VERIFICATION_TOKEN_EXPIRATION_TIME: 15m
+  SWAGGER_PASSWORD: ${SWAGGER_PASSWORD:?required}
+  AUTH_COOKIE_PREFIX: sidnam_staging_
+  EXTERNAL_SERVICES: disabled
+  E2E_ADMIN_PASSWORD: ${E2E_ADMIN_PASSWORD:?required}
+  E2E_READER_PASSWORD: ${E2E_READER_PASSWORD:?required}
+  E2E_INACTIVE_PASSWORD: ${E2E_INACTIVE_PASSWORD:?required}
+services:
+  mysql:
+    image: mysql:8.4@sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902
+    environment:
+      MYSQL_DATABASE: sidnam_staging
+      MYSQL_USER: sidnam_staging
+      MYSQL_PASSWORD: ${DB_PASS:?required}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?required}
+    volumes: [staging-db:/var/lib/mysql]
+    networks: [isolated]
+    mem_limit: 768m
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD-SHELL, 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql -u "$$MYSQL_USER" -D "$$MYSQL_DATABASE" -e "SELECT 1"']
+      interval: 5s
+      retries: 40
+      start_period: 30s
+  migrate:
+    image: ${BACKEND_IMAGE:?immutable backend image required}
+    environment: *backend-env
+    command: [sh, -c, 'node dist/devsecops/database.js migrate && node dist/devsecops/database.js seed']
+    depends_on:
+      mysql: {condition: service_healthy}
+    networks: [isolated]
+    mem_limit: 512m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: 'no'
+  backend:
+    image: ${BACKEND_IMAGE:?immutable backend image required}
+    environment: *backend-env
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    networks: [isolated]
+    mem_limit: 768m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      retries: 12
+  web:
+    image: ${FRONTEND_IMAGE:?immutable frontend image required}
+    expose: ['8080']
+    depends_on:
+      backend: {condition: service_healthy}
+    networks: [default, isolated]
+    mem_limit: 128m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+networks:
+  isolated: {internal: true}
+volumes:
+  staging-db: {}

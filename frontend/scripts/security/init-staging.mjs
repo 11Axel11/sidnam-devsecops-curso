@@ -1,0 +1,11 @@
+import { randomBytes } from 'node:crypto';
+import { writeFileSync } from 'node:fs';
+const origin = process.env.APP_ORIGIN ?? 'http://localhost:8080';
+const url = new URL(origin);
+if (url.origin !== origin || /^(www\.)?sidnam\.org$|^api\.sidnam\.org$/.test(url.hostname)) throw new Error('Use an isolated staging origin');
+const secret = () => randomBytes(32).toString('hex');
+const values = { APP_ORIGIN: origin, NODE_ENV: url.protocol === 'https:' ? 'production' : 'development', STAGING_PORT: '8080', DB_PASS: secret(), MYSQL_ROOT_PASSWORD: secret(), JWT_SECRET: secret(), JWT_VERIFICATION_TOKEN_SECRET: secret(), SWAGGER_PASSWORD: secret(), E2E_ADMIN_PASSWORD: secret(), E2E_READER_PASSWORD: secret(), E2E_INACTIVE_PASSWORD: secret() };
+const file = process.env.STAGING_ENV_FILE ?? '.env.staging';
+if (!/^\.env\.[a-z.-]+$/.test(file)) throw new Error('Use a local .env filename');
+writeFileSync(file, Object.entries(values).map(([key, value]) => `${key}=${value}`).join('\n') + '\n', { flag: 'wx', mode: 0o600 });
+console.log('Created private staging configuration with random secrets. Never commit or share.');

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+artifacts/
+coverage/
+playwright-report/
+test-results/
+package-lock.json
+security/vendor/
+migrations/001-initial.json

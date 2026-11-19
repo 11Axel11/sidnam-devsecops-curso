@@ -1,0 +1,11 @@
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+const url='https://semgrep.dev/c/p/ci';
+const response=await fetch(url,{signal:AbortSignal.timeout(60000)});
+if(!response.ok) throw new Error('Cannot retrieve public Semgrep CI rules');
+const rules=await response.text();
+if(!rules.includes('rules:') && !JSON.parse(rules).rules?.length) throw new Error('Unexpected rule format');
+mkdirSync('security/vendor',{recursive:true});
+writeFileSync('security/vendor/ci.yml',rules);
+writeFileSync('security/vendor/source.json',JSON.stringify({url,retrievedAt:new Date().toISOString(),sha256:createHash('sha256').update(rules).digest('hex')},null,2)+'\n');
+console.log('Vendored public CI rules; review and commit the rule snapshot.');

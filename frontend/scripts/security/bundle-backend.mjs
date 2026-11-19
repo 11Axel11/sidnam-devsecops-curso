@@ -1,0 +1,17 @@
+import { resolve } from 'node:path';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { run } from './evidence.mjs';
+const backend = resolve(process.env.BACKEND_DIR ?? '../../Backend/sidnam-backend');
+const target = resolve('deploy/staging/backend-source.tar.gz');
+const dirty = run('git', ['status', '--porcelain'], { cwd: backend });
+const commit = run('git', ['rev-parse', 'HEAD'], { cwd: backend });
+if (dirty.exitCode || dirty.stdout || !/^[a-f0-9]{40}$/.test(commit.stdout.trim())) throw new Error('Commit and review backend before bundling');
+const prefix = run('git', ['rev-parse', '--show-prefix'], { cwd: backend }).stdout.trim().replace(/\/$/, '');
+const sourceTree = commit.stdout.trim() + (prefix ? ':' + prefix : '');
+const archived = run('git', ['archive', '--format=tar.gz', '-o', target, sourceTree], { cwd: backend });
+if (archived.exitCode) throw new Error('Backend archive failed');
+const repositories = JSON.parse(readFileSync('security/repositories.json', 'utf8'));
+const metadata = { repository: repositories.owner + '/' + repositories.backend, commit: commit.stdout.trim(), sourcePath: prefix || '.', sha256: createHash('sha256').update(readFileSync(target)).digest('hex'), historyIncluded: false };
+writeFileSync('deploy/staging/backend-source.json', JSON.stringify(metadata, null, 2) + '\n');
+console.log(JSON.stringify(metadata, null, 2));

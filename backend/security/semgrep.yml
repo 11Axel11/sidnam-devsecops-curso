@@ -1,0 +1,21 @@
+rules:
+  - id: sidnam-no-default-secrets
+    languages: [typescript, javascript]
+    message: Secrets must be mandatory environment configuration, without a literal fallback.
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: process.env.$KEY || "$VALUE"
+          - pattern: process.env.$KEY ?? "$VALUE"
+      - metavariable-regex:
+          metavariable: $KEY
+          regex: (?i).*(SECRET|PASSWORD|API_KEY).*
+  - id: sidnam-no-schema-sync
+    paths:
+      include:
+        - src/app.module.ts
+        - src/devsecops/database.ts
+    languages: [typescript]
+    message: Deployed schemas must use reviewed migrations.
+    severity: ERROR
+    pattern: "{..., synchronize: true, ...}"

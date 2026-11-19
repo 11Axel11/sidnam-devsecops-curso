@@ -1,0 +1,208 @@
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { EstadoMap } from "src/common/constants/estado.constant";
+import { EstadoSolicitud } from "src/common/enums/estadosSolicitudes.enum";
+import { Solicitud_donacion_pendiente } from "../../entities/solicitudDonacionPendiente.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { DataSource, Repository } from "typeorm";
+import { GestionUsuarioService } from "src/modulos/gestion-usuario/services/gestion-usuario.service";
+import { EmailService } from "src/modulos/autenticacion/email/email.service";
+import { SolicitudDonacionGateway } from "../../solicitudDonacion.gateway";
+import { Usuario } from "src/modulos/gestion-usuario/entities/usuario.entity";
+import { RegistroDonacion } from "../../entities/registroDonacion.entity";
+import { Donador } from "../../entities/donador.entity";
+import { CrearRegistroDto } from "../../dto/crearRegistroDto";
+import { VoluntariadoGateway } from "src/modulos/voluntariado/voluntariado.gateway";
+
+
+
+@Injectable()
+export class CreateRegistroDonacionUseCase {
+
+
+    constructor(
+        
+            @InjectRepository(Solicitud_donacion_pendiente)
+            private readonly solicitudPendiente: Repository<Solicitud_donacion_pendiente>,
+
+            @InjectRepository(RegistroDonacion)
+                private readonly solicitudDonacionAprobada: Repository<RegistroDonacion>,
+
+                @InjectRepository(Donador)
+                    private readonly donadorRepository: Repository<Donador>,
+            
+
+            private readonly dataSource: DataSource,
+            
+            private readonly emailService: EmailService,
+
+            private readonly gestionUsuario: GestionUsuarioService,
+
+            private readonly solicitudDonacionGateway: SolicitudDonacionGateway,
+
+            private readonly voluntariadoGateway: VoluntariadoGateway,
+        
+          ) {}
+    
+
+async updateEstadoSolicitudes(idEstado: number, idSolicitud: number, idUsuario: number): Promise<{ message: string }> {
+            const estadosValidos = Object.values(EstadoSolicitud).filter(v => typeof v === 'number') as number[];
+            if (!estadosValidos.includes(idEstado)) {
+                throw new NotFoundException('Estado no existente');
+            }
+    
+            const estado = EstadoMap[idEstado];
+    
+            const solicitud = await this.solicitudPendiente.findOne({
+                where: { id: idSolicitud },
+            });
+    
+            if (!solicitud) {
+                throw new NotFoundException(`Solicitud con id ${idSolicitud} no encontrada`);
+            }
+    
+            if(solicitud.estado == 'aprobada'){
+                throw new BadRequestException('Esta solicitud ya ha sido aprobada');
+            }
+    
+            if(solicitud.estado == 'rechazada'){
+                throw new BadRequestException('Esta solicitud ya ha sido rechazada');
+            }
+    
+            const usuario = await this.gestionUsuario.findOneById(idUsuario)
+    
+    
+            if (estado === 'aprobada') {
+                await this.crearSolicitudDonacionOficial(solicitud, usuario);
+                 solicitud.estado = estado;
+                await this.solicitudPendiente.save(solicitud);
+                const totalPendientes = await this.solicitudPendiente.count({ where: { estado: 'pendiente' } });
+                await this.emitirTotalSolicitudesPendientes(totalPendientes);
+                return {message: 'Esta solicitud ha sido aceptada'};
+            }
+    
+            if (estado == 'rechazada') {
+                await this.emailService.sendSolicitudDonacionRechazadaEmail(solicitud.email, solicitud.nombre)
+                solicitud.estado = estado;
+                await this.solicitudPendiente.save(solicitud);
+                const totalPendientes = await this.solicitudPendiente.count({ where: { estado: 'pendiente' } });
+                await this.emitirTotalSolicitudesPendientes(totalPendientes);
+                return {message: 'Esta solicitud ha sido rechazada'};
+            }
+    
+            return {message: 'Estado actualizado correctamente'};
+        }
+
+
+         async crearSolicitudDonacionOficial(solicitud: Solicitud_donacion_pendiente, usuario: Usuario): Promise<void> {
+            try{
+            await this.dataSource.transaction(async manager => {
+
+             let donador = await this.donadorRepository.findOne({
+              where: { cedula: solicitud.cedula }
+             });
+
+                if (!donador) {
+                    donador = manager.create(Donador, {
+                    cedula: solicitud.cedula,
+                    nombre: solicitud.nombre,
+                    apellido1: solicitud.apellido1,
+                    apellido2: solicitud.apellido2,
+                    telefono: solicitud.telefono,
+                    email: solicitud.email,
+                });
+
+                await manager.save(donador);
+                }
+
+                const registro = manager.create(RegistroDonacion, {
+                donador,
+                aprobadaPor: `Aprobada por: ${usuario.name}`,
+                observaciones: solicitud.observaciones,
+                recibidaEn: null,
+                recibidaPor: "",
+                anonimo: solicitud.anonimo,
+                tipoDonacion: solicitud.tipoDonacion,
+                descripcion: solicitud.descripcion,
+                idSolicitud: solicitud.id,
+                });
+
+                await manager.save(registro);
+            });
+
+            await this.emailService.sendSolicitudDonacionAceptadaEmail(solicitud.email, solicitud.nombre);
+            } catch (error) {
+    console.error('🔥 Error en crearSolicitudDonacionOficial:', error);
+    throw new InternalServerErrorException('No se pudo enviar el correo');
+          }
+     }
+
+
+
+     async crearRegistro(dto: CrearRegistroDto, idUsuario: number): Promise<{message: string}>{
+
+        const usuario = await this.gestionUsuario.findOneById(idUsuario)
+
+        if (!usuario) {
+            throw new NotFoundException('Usuario no encontrado');
+        }
+
+        await this.dataSource.transaction(async manager => {
+            let donador = await this.donadorRepository.findOne({
+              where: { cedula: dto.cedula }
+             });
+
+                if (!donador) {
+                    donador = manager.create(Donador, {
+                    cedula: dto.cedula,
+                    nombre: dto.nombre,
+                    apellido1: dto.apellido1,
+                    apellido2: dto.apellido2,
+                    telefono: dto.telefono,
+                    email: dto.email,
+                });
+
+                await manager.save(donador);
+             }
+
+              const ahora = new Date();
+              const registro = manager.create(RegistroDonacion, {
+                donador,
+                aprobadaPor: `Creado por: ${usuario.name}`,
+                observaciones: dto.observaciones,
+                recibida: true,
+                recibidaEn: ahora,
+                recibidaPor: `Recibida por: ${usuario.name}`,
+                anonimo: dto.anonimo,
+                tipoDonacion: dto.tipoDonacion,
+                descripcion: dto.descripcion,
+                });
+
+                await manager.save(registro);
+            });
+            return {message: 'Registro creado correctamente'}
+        }
+
+        private async emitirTotalSolicitudesPendientes(totalPendientes: number): Promise<void> {
+            const ultimaSolicitudPendiente = await this.solicitudPendiente.findOne({
+                where: { estado: 'pendiente' },
+                order: { id: 'DESC' },
+            });
+
+            if (!ultimaSolicitudPendiente) {
+                this.voluntariadoGateway.emitirNomasSolicitudesPendientes('donacion');
+                return;
+            }
+
+            this.voluntariadoGateway.emitSolicitudesPendientesCount(
+                totalPendientes,
+                {
+                id: ultimaSolicitudPendiente.id,
+                nombre: ultimaSolicitudPendiente.nombre,
+                apellido1: ultimaSolicitudPendiente.apellido1,
+                apellido2: ultimaSolicitudPendiente.apellido2,
+                email: ultimaSolicitudPendiente.email,
+                tipo: 'donacion',
+                },
+            );
+        }
+}

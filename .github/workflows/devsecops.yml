@@ -1,0 +1,105 @@
+name: DevSecOps SIDNAM
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '*.md']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sidnam-public-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  security:
+    name: Security (${{ matrix.component }})
+    strategy:
+      fail-fast: false
+      matrix:
+        component: [frontend, backend]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: ${{ matrix.component }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: ${{ matrix.component }}/package-lock.json
+      - run: npm ci
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      - name: Pull pinned scanners
+        run: node -e "const {execFileSync}=require('child_process');for(const [k,v] of Object.entries(require('./scripts/security/images.json')))if(k!=='zap')execFileSync('docker',['pull',v],{stdio:'inherit'})"
+      - run: npm run security:scan
+      - run: npm run build
+      - if: matrix.component == 'backend'
+        run: npm run test:security
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: security-${{ matrix.component }}-${{ github.sha }}
+          path: ${{ matrix.component }}/artifacts/
+          retention-days: 90
+          if-no-files-found: error
+  integration:
+    name: Playwright and authenticated ZAP
+    needs: security
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: source
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: node scripts/security/unpack-backend.mjs
+        working-directory: source/frontend
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/verified-backend
+      - run: node scripts/verify-bundle.mjs
+        working-directory: source
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/verified-backend
+      - run: npm ci
+        working-directory: source/frontend
+      - run: npm ci
+        working-directory: verified-backend
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      - name: Pull pinned scanners
+        working-directory: source/frontend
+        run: node -e "const {execFileSync}=require('child_process');for(const v of Object.values(require('./scripts/security/images.json')))execFileSync('docker',['pull',v],{stdio:'inherit'})"
+      - run: npm run security:integration-backend
+        working-directory: source/frontend
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/verified-backend
+      - run: npm run test:security
+        working-directory: verified-backend
+      - run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: source/frontend
+      - run: npm run staging:init
+        working-directory: source/frontend
+      - run: npm run staging:verify
+        working-directory: source/frontend
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/verified-backend
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: integration-${{ github.sha }}
+          path: |
+            source/frontend/artifacts/
+            verified-backend/artifacts/
+          retention-days: 90
+          if-no-files-found: error
+      - if: always() && hashFiles('source/frontend/.env.staging') != ''
+        working-directory: source/frontend
+        run: docker compose --env-file .env.staging -f deploy/staging/compose.yaml down

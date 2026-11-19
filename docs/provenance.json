@@ -1,0 +1,8 @@
+{
+  "frontend": {"repository": "11Axel11/sidnam-administrativa-DevSecOps", "commit": "925c575762cc60af3022cb463781d6ab32056dce"},
+  "backend": {"repository": "11Axel11/sidnam-backend-DevSecOps", "commit": "1d6bc0643ca22bc874a0a429e1648fadef42a0e6", "functionalSourceCommit": "6b41ddea71771a85035daa4fc09f0b2405e10b2a"},
+  "backendArchiveSha256": "be97d1b200af03a53558c12e1a57be38997b5816133b90da52f01b66a2184e98",
+  "originalPrivateHistoryIncluded": false,
+  "authorizationConfirmedByStudent": "2026-11-19",
+  "note": "Current source snapshots. Backend differs from the deployed functional source only by an academic delivery document. Original authorship is preserved in NOTICE.md."
+}

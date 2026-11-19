@@ -1,0 +1,18 @@
+import { run } from '../../scripts/security/evidence.mjs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+const repositories = JSON.parse(readFileSync('security/repositories.json', 'utf8'));
+const repository = repositories.owner + '/' + repositories.frontend;
+const id = process.argv[2];
+if (!/^\d+$/.test(id ?? '')) throw new Error('Artifact ID required');
+const credential = run('git', ['credential', 'fill'], { input: `protocol=https\nhost=github.com\npath=${repository}.git\n\n`, env: { ...process.env, GIT_TERMINAL_PROMPT: '0', GCM_INTERACTIVE: 'Never' } });
+const token = credential.stdout.split(/\r?\n/).find(line => line.startsWith('password='))?.slice(9);
+if (!token) throw new Error('Delegated GitHub credential unavailable');
+const response = await fetch('https://api.github.com/repos/' + repository + '/actions/artifacts/' + id + '/zip', { headers: { Authorization: 'Bearer ' + token }, redirect: 'manual' });
+const location = new URL(response.headers.get('location'));
+if (location.protocol !== 'https:' || !/(^|\.)(githubusercontent\.com|blob\.core\.windows\.net)$/.test(location.hostname)) throw new Error('Unexpected artifact host');
+const archive = await fetch(location, { redirect: 'error' });
+if (!archive.ok) throw new Error('Artifact download failed');
+mkdirSync('.private', { recursive: true });
+writeFileSync('.private/ci-' + id + '.zip', Buffer.from(await archive.arrayBuffer()));
+console.log('.private/ci-' + id + '.zip');

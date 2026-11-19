@@ -1,0 +1,13 @@
+import { resolve } from 'node:path';
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { npm } from './evidence.mjs';
+const backend = resolve(process.env.BACKEND_DIR ?? '../backend');
+const result = npm(['run', 'security:scan'], backend);
+const run = readdirSync(resolve(backend, 'artifacts')).filter(name => name.endsWith('-security')).sort().at(-1);
+const file = resolve(backend, 'artifacts', run, 'manifest.json');
+const report = JSON.parse(readFileSync(file, 'utf8'));
+report.originalSource = JSON.parse(readFileSync('deploy/staging/backend-source.json', 'utf8'));
+report.historyCoverage = 'Packaged current source only. Full original Git history is scanned by the backend repository Security workflow.';
+writeFileSync(file, JSON.stringify(report, null, 2));
+console.log(result.stdout);
+process.exitCode = result.exitCode;

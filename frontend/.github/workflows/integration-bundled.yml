@@ -1,0 +1,64 @@
+name: Full DevSecOps integration
+on:
+  push:
+    branches: [devsecops/curso-seguridad]
+    paths-ignore: ['docs/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: sidnam-integration
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: frontend
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+      - run: node scripts/security/unpack-backend.mjs
+        working-directory: frontend
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/backend
+      - run: npm ci
+        working-directory: frontend
+      - run: npm ci
+        working-directory: backend
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
+      - name: Pull pinned scanners
+        working-directory: frontend
+        run: node -e "const {execFileSync}=require('child_process');for(const v of Object.values(require('./scripts/security/images.json')))execFileSync('docker',['pull',v],{stdio:'inherit'})"
+      - run: npm run security:scan
+        working-directory: frontend
+      - run: npm run security:integration-backend
+        working-directory: frontend
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/backend
+      - run: npm run test:security
+        working-directory: backend
+      - run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: frontend
+      - run: npm run staging:init
+        working-directory: frontend
+      - run: npm run staging:verify
+        working-directory: frontend
+        env:
+          BACKEND_DIR: ${{ github.workspace }}/backend
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: integration-${{ github.sha }}
+          path: |
+            frontend/artifacts/
+            backend/artifacts/
+          retention-days: 90
+          if-no-files-found: error
+      - if: always() && hashFiles('frontend/.env.staging') != ''
+        working-directory: frontend
+        run: docker compose --env-file .env.staging -f deploy/staging/compose.yaml down

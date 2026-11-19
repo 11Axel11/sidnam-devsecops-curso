@@ -1,0 +1,79 @@
+import { EstadoExpediente } from 'src/common/enums/estadosExpedientes.enum';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Residente } from './residente.entity';
+import { Patologias } from './patologias.entity';
+import { Administraciones } from './administraciones.entity';
+import { AdministracionesEspeciales } from './administracionEspecial.entity';
+import { NotaEnfermeria } from './NotaEnfermeria.entity';
+import { Curaciones } from './curaciones.entity';
+import { Consulta_Ebais } from './consultaEbais.entity';
+import { Consulta_Especialista } from './consultaEspecialista.entity';
+import { Libro_Campo } from './libroCampo.entity';
+import { HistorialPatologias } from './historiaoPatologias.entity';
+import { HistorialCuraciones } from './historialCuraciones.entity';
+import { SalidaResidente } from './salidasResidente.entity';
+
+
+@Entity()
+export class Expediente_Residente {
+  @PrimaryGeneratedColumn()
+  id_expediente: number;
+
+  @Column()
+  tipo_pension: string;
+
+  @Column()
+  fecha_ingreso: Date;
+
+  @Column({
+  type: 'enum',
+  enum: EstadoExpediente,
+  default: EstadoExpediente.Activo,
+  })
+  estado: EstadoExpediente;
+
+  @Column({ nullable: true })
+  fecha_cierre: Date;
+
+  @Column({nullable: true})
+  usuario_cierre: string
+
+  @OneToOne(() => Residente, residente => residente.expediente)
+  @JoinColumn() 
+  residente: Residente;
+
+  @ManyToMany(() => Patologias, patologia => patologia.expedientes, { cascade: true })
+  @JoinTable()
+  patologias: Patologias[];
+
+  @OneToMany(() => Administraciones, administracion => administracion.expediente)
+  administraciones: Administraciones[];
+
+  @OneToMany(() => AdministracionesEspeciales, administracionEspecial => administracionEspecial.expediente)
+  administracionesEspeciales: AdministracionesEspeciales[];
+
+  @OneToMany(() => NotaEnfermeria, nota => nota.expediente)
+  notas: NotaEnfermeria[];
+
+  @OneToMany(() => Curaciones, curacion => curacion.expediente)
+  curaciones: Curaciones[];
+
+  @OneToMany(() => Consulta_Ebais, consulta => consulta.expediente)
+  consultasEbais: Consulta_Ebais[];
+
+  @OneToMany(() => Consulta_Especialista, consulta => consulta.expediente)
+  consultasEspecialistas: Consulta_Especialista[];
+
+  @OneToMany(() => Libro_Campo, libro => libro.expediente)
+  librosCampo: Libro_Campo[];
+
+  @OneToMany(() => HistorialPatologias, historial => historial.residente)
+  historialPatologias: HistorialPatologias[];
+
+  @OneToMany(() => HistorialCuraciones, historial => historial.residente)
+  historialCuraciones: HistorialCuraciones[];
+
+  @OneToMany(() => SalidaResidente, salida => salida.expediente)
+  salidas: SalidaResidente[];
+
+}

@@ -1,0 +1,12 @@
+**/node_modules/
+**/dist/
+**/artifacts/
+**/.private/
+**/.env
+**/.env.*
+!**/.env.example
+**/test-results/
+**/playwright-report/
+**/.tanstack/
+*.log
+.DS_Store

@@ -1,0 +1,8 @@
+title = "SIDNAM"
+[extend]
+useDefault = true
+[allowlist]
+description = "Generated files and private local environments, never excluded from Git history scan"
+paths = [
+  '''(^|/)(node_modules|dist|artifacts|coverage|playwright-report|test-results)/''',
+]

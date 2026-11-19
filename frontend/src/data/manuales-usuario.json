@@ -1,0 +1,173 @@
+[
+  {
+    "id": "ajustes",
+    "titulo": "Manual del apartado de Ajustes",
+    "modulo": "Ajustes",
+    "driveLink": "https://drive.google.com/file/d/1WC7xT7up4ahK1vatXb2c9ye3enBGfSD1/view?usp=sharing",
+    "anyOf": [
+      "Residencia.Enfermería:Ver",
+      "Residencia.Enfermería:Actualizar",
+      "Residencia.Trabajo Social:Ver",
+      "Residencia.Trabajo Social:Actualizar",
+      "Inventariado.Alimentos:Eliminar",
+      "Inventariado.Alimentos:Actualizar",
+      "Inventariado.Alimentos:Crear",
+      "Inventariado.Alimentos:Ver",
+      "Inventariado.Medicamentos:Eliminar",
+      "Inventariado.Medicamentos:Actualizar",
+      "Inventariado.Medicamentos:Crear",
+      "Inventariado.Medicamentos:Ver",
+      "Inventariado.Limpieza:Eliminar",
+      "Inventariado.Limpieza:Actualizar",
+      "Inventariado.Limpieza:Crear",
+      "Inventariado.Limpieza:Ver",
+      "Inventariado.Salidas:Eliminar",
+      "Inventariado.Salidas:Actualizar",
+      "Inventariado.Salidas:Crear",
+      "Inventariado.Salidas:Ver",
+      "Voluntariado.Gestión Voluntariado:Eliminar",
+      "Voluntariado.Gestión Voluntariado:Actualizar",
+      "Voluntariado.Gestión Voluntariado:Crear",
+      "Voluntariado.Gestión Voluntariado:Ver",
+      "Voluntariado.Solicitudes Voluntariado:Eliminar",
+      "Voluntariado.Solicitudes Voluntariado:Actualizar",
+      "Voluntariado.Solicitudes Voluntariado:Crear",
+      "Voluntariado.Solicitudes Voluntariado:Ver"
+    ]
+  },
+  {
+    "id": "donaciones",
+    "titulo": "Manual del módulo de Donaciones",
+    "modulo": "Donaciones",
+    "driveLink": "https://drive.google.com/file/d/1bhS7Q2fYCBOijmRqXPwrm_HKMbCWaW7e/view?usp=sharing",
+    "anyOf": [
+      "Donaciones.Gestión Donaciones:Eliminar",
+      "Donaciones.Gestión Donaciones:Actualizar",
+      "Donaciones.Gestión Donaciones:Crear",
+      "Donaciones.Gestión Donaciones:Ver",
+      "Donaciones.Solicitud Donaciones:Eliminar",
+      "Donaciones.Solicitud Donaciones:Actualizar",
+      "Donaciones.Solicitud Donaciones:Crear",
+      "Donaciones.Solicitud Donaciones:Ver"
+    ]
+  },
+  {
+    "id": "publicaciones",
+    "titulo": "Manual del módulo de Publicaciones",
+    "modulo": "Publicaciones",
+    "driveLink": "https://drive.google.com/file/d/1NesJMRwKUDDmLF1CQhcIFRFpnh72AzBK/view?usp=sharing",
+    "anyOf": [
+      "Informativa.Eventos:Eliminar",
+      "Informativa.Eventos:Actualizar",
+      "Informativa.Eventos:Crear",
+      "Informativa.Eventos:Ver",
+      "Informativa.Galeria:Eliminar",
+      "Informativa.Galeria:Actualizar",
+      "Informativa.Galeria:Crear",
+      "Informativa.Galeria:Ver",
+      "Informativa.Proyectos:Eliminar",
+      "Informativa.Proyectos:Actualizar",
+      "Informativa.Proyectos:Crear",
+      "Informativa.Proyectos:Ver"
+    ]
+  },
+  {
+    "id": "inventarios",
+    "titulo": "Manual del módulo de Inventarios",
+    "modulo": "Inventarios",
+    "driveLink": "https://drive.google.com/file/d/1LVTYtC0YLE2ZEqZsd1MoPrX2vCXuTHFw/view?usp=sharing",
+    "anyOf": [
+      "Inventariado.Alimentos:Eliminar",
+      "Inventariado.Alimentos:Actualizar",
+      "Inventariado.Alimentos:Crear",
+      "Inventariado.Alimentos:Ver",
+      "Inventariado.Medicamentos:Eliminar",
+      "Inventariado.Medicamentos:Actualizar",
+      "Inventariado.Medicamentos:Crear",
+      "Inventariado.Medicamentos:Ver",
+      "Inventariado.Limpieza:Eliminar",
+      "Inventariado.Limpieza:Actualizar",
+      "Inventariado.Limpieza:Crear",
+      "Inventariado.Limpieza:Ver",
+      "Inventariado.Salidas:Eliminar",
+      "Inventariado.Salidas:Actualizar",
+      "Inventariado.Salidas:Crear",
+      "Inventariado.Salidas:Ver"
+    ]
+  },
+  {
+    "id": "proveedores",
+    "titulo": "Manual del módulo de Proveeduría",
+    "modulo": "Proveeduría",
+    "driveLink": "https://drive.google.com/file/d/1V_xq1ZGJ9tsuog63zyVUFTliIGC0caWV/view?usp=sharing",
+    "anyOf": [
+      "Proveduría.General Proveduría:Eliminar",
+      "Proveduría.General Proveduría:Actualizar",
+      "Proveduría.General Proveduría:Ver"
+    ]
+  },
+  {
+    "id": "facturas",
+    "titulo": "Manual del módulo de Facturación",
+    "modulo": "Facturación",
+    "driveLink": "https://drive.google.com/file/d/1oY4OfUNNcUWftpuNfUhvc06O-ATiNWme/view?usp=sharing",
+    "anyOf": [
+      "Proveduría.Facturas Proveduría:Eliminar",
+      "Proveduría.Facturas Proveduría:Actualizar",
+      "Proveduría.Facturas Proveduría:Crear",
+      "Proveduría.Facturas Proveduría:Ver"
+    ]
+  },
+  {
+    "id": "residentes",
+    "titulo": "Manual del módulo de Residentes",
+    "modulo": "Residentes",
+    "driveLink": "https://drive.google.com/file/d/1dwudgxU6rfwAZgzm5ykJl37sQaQJM8Rv/view?usp=sharing",
+    "anyOf": [
+      "Residencia.General Expedientes:Eliminar",
+      "Residencia.General Expedientes:Actualizar",
+      "Residencia.Trabajo Social:Eliminar",
+      "Residencia.Trabajo Social:Actualizar",
+      "Residencia.Trabajo Social:Crear",
+      "Residencia.Trabajo Social:Ver",
+      "Residencia.Enfermería:Eliminar",
+      "Residencia.Enfermería:Actualizar",
+      "Residencia.Enfermería:Crear",
+      "Residencia.General Expedientes:Ver",
+      "Residencia.General Expedientes:Crear",
+      "Residencia.Enfermería:Ver"
+    ]
+  },
+  {
+    "id": "voluntariado",
+    "titulo": "Manual del módulo de Voluntariado",
+    "modulo": "Voluntariado",
+    "driveLink": "https://drive.google.com/file/d/1xnzeldxxn72ghElkg4VffifqwHgP0dvP/view?usp=sharing",
+    "anyOf": [
+      "Voluntariado.Gestión Voluntariado:Eliminar",
+      "Voluntariado.Gestión Voluntariado:Actualizar",
+      "Voluntariado.Gestión Voluntariado:Crear",
+      "Voluntariado.Gestión Voluntariado:Ver",
+      "Voluntariado.Solicitudes Voluntariado:Eliminar",
+      "Voluntariado.Solicitudes Voluntariado:Actualizar",
+      "Voluntariado.Solicitudes Voluntariado:Crear",
+      "Voluntariado.Solicitudes Voluntariado:Ver"
+    ]
+  },
+  {
+    "id": "usuarios",
+    "titulo": "Manual del módulo de Gestión de Usuarios",
+    "modulo": "Gestión de Usuarios",
+    "driveLink": "https://drive.google.com/file/d/1BSD1sVauNorDXCDynTPjSllFopVAvO6P/view?usp=sharing",
+    "anyOf": [
+      "Seguridad.Usuarios:Eliminar",
+      "Seguridad.Usuarios:Actualizar",
+      "Seguridad.Usuarios:Crear",
+      "Seguridad.Usuarios:Ver",
+      "Seguridad.Roles:Eliminar",
+      "Seguridad.Roles:Actualizar",
+      "Seguridad.Roles:Crear",
+      "Seguridad.Roles:Ver"
+    ]
+  }
+]

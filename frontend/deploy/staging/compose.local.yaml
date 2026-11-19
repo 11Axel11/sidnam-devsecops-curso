@@ -1,0 +1,4 @@
+# Local migration generation/testing only. Never pass this override on the VPS.
+services:
+  mysql:
+    ports: ['127.0.0.1:3307:3306']

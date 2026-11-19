@@ -1,0 +1,9 @@
+title = "SIDNAM current worktree"
+[extend]
+useDefault = true
+[allowlist]
+description = "Generated directories and local-only environment files; Git history uses separate stricter configuration"
+paths = [
+  '''(^|/)(node_modules|dist|artifacts|coverage|playwright-report|test-results|\.git|\.private)/''',
+  '''(^|/)\.env($|\.)''',
+]

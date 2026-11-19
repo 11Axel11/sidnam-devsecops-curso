@@ -1,0 +1,410 @@
+[
+  {
+    "query": "CREATE TABLE `tipo_voluntariado` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(100) NOT NULL, UNIQUE INDEX `IDX_40a9a668f8066689bcb081985f` (`nombre`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `horarios` (`id` int NOT NULL AUTO_INCREMENT, `dia` varchar(255) NOT NULL, `horaInicio` varchar(255) NOT NULL, `horaFin` varchar(255) NOT NULL, `solicitud_aprobada_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `actividades` (`id` int NOT NULL AUTO_INCREMENT, `fecha` datetime NOT NULL, `cantidadHoras` int NULL, `actividades` varchar(255) NOT NULL, `solicitud_aprobada_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `solicitud_aprobada` (`id` int NOT NULL AUTO_INCREMENT, `datosExtra` varchar(255) NOT NULL, `observaciones` varchar(255) NULL, `estado` varchar(255) NOT NULL DEFAULT 'Activo', `cantidadHoras` int NULL, `progreso_horas` int NULL, `aprobadaEn` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `idSolicitud` int NULL, `voluntario_id` int NULL, `tipo_voluntariado_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `contacto_emergencia` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `telefono` varchar(255) NOT NULL, `aprobadaEn` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `voluntario_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `voluntario` (`id` int NOT NULL AUTO_INCREMENT, `cedula` varchar(255) NOT NULL, `nombre` varchar(255) NOT NULL, `apellido1` varchar(255) NOT NULL, `apellido2` varchar(255) NULL, `email` varchar(255) NOT NULL, `telefono` varchar(255) NOT NULL, `ocupacion` varchar(255) NOT NULL, `direccion` varchar(255) NOT NULL, `sexo` enum ('M', 'F') NOT NULL, `experienciaLaboral` text NULL, `creadoEn` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `contacto_emergencia_pendiente` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `telefono` varchar(255) NOT NULL, `solicitudPendienteId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `horario_pendiente` (`id` int NOT NULL AUTO_INCREMENT, `dia` varchar(255) NOT NULL, `horaInicio` varchar(255) NOT NULL, `horaFin` varchar(255) NOT NULL, `solicitudPendienteId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `solicitud_pendiente` (`id` int NOT NULL AUTO_INCREMENT, `cedula` varchar(255) NOT NULL, `nombre` varchar(255) NOT NULL, `apellido1` varchar(255) NOT NULL, `apellido2` varchar(255) NULL, `email` varchar(255) NOT NULL, `telefono` varchar(255) NOT NULL, `ocupacion` varchar(255) NOT NULL, `direccion` varchar(255) NOT NULL, `sexo` enum ('M', 'F') NOT NULL, `experienciaLaboral` text NULL, `tipoVoluntariado` int NOT NULL, `cantidadHoras` int NULL, `estado` varchar(255) NOT NULL DEFAULT 'pendiente', `creadoEn` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `observaciones` varchar(255) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `encargado` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `cedula` varchar(255) NOT NULL, `apellido1` varchar(255) NOT NULL, `apellido2` varchar(255) NULL, `telefono` varchar(255) NOT NULL, `correo` varchar(255) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `residente` (`id_adulto_mayor` int NOT NULL AUTO_INCREMENT, `cedula` varchar(255) NOT NULL, `nombre` varchar(255) NOT NULL, `apellido1` varchar(255) NOT NULL, `apellido2` varchar(255) NULL, `email` varchar(255) NULL, `sexo` enum ('M', 'F') NOT NULL, `fecha_nacimiento` datetime NOT NULL, `edad` int NOT NULL, `estado_civil` enum ('Casado', 'Soltero', 'Viudo') NOT NULL, `dependencia` enum ('Dependiente', 'Independiente') NOT NULL, `linea_pobreza` enum ('pobreza_extrema', 'pobreza_basica', 'vulnerables', 'no_pobreza', 'sin_registro') NOT NULL, PRIMARY KEY (`id_adulto_mayor`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `patologias` (`id_patologia` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, PRIMARY KEY (`id_patologia`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `entrada_medicamento` (`id` int NOT NULL AUTO_INCREMENT, `fechaEntrada` timestamp NOT NULL, `cantidad` int NOT NULL, `unidad_medida_id` int NULL, `medicamento_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `medicamentos` (`id_medicamento` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `tipo` varchar(255) NOT NULL, PRIMARY KEY (`id_medicamento`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `administracion_medicamento` (`id` int NOT NULL AUTO_INCREMENT, `cantidad` decimal(10,2) NOT NULL, `administracionIdAdministracion` int NULL, `medicamentoIdMedicamento` int NULL, `unidadIdUnidad` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `administraciones` (`id_administracion` int NOT NULL AUTO_INCREMENT, `turno` enum ('AM', 'PM', 'MD', 'MN') NOT NULL, `expedienteIdExpediente` int NULL, PRIMARY KEY (`id_administracion`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `nota_enfermeria` (`id` int NOT NULL AUTO_INCREMENT, `segmento` text NOT NULL, `titulo` text NULL, `fecha` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `expedienteIdExpediente` int NOT NULL, `notaPadreId` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `curaciones` (`id_curacion` int NOT NULL AUTO_INCREMENT, `titulo` varchar(255) NULL, `descripcion` text NOT NULL, `fecha_curacion` datetime NOT NULL, `fecha` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `expedienteIdExpediente` int NULL, `notaPadreIdCuracion` int NULL, PRIMARY KEY (`id_curacion`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `consulta_ebais` (`id_consulta_ebais` int NOT NULL AUTO_INCREMENT, `titulo` varchar(255) NULL, `descripcion` text NOT NULL, `fecha_consulta` datetime NOT NULL, `fecha` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `expedienteIdExpediente` int NULL, `notaPadreIdConsultaEbais` int NULL, PRIMARY KEY (`id_consulta_ebais`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `tipo_consulta` (`id_tipo_consulta` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, PRIMARY KEY (`id_tipo_consulta`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `consulta_especialista` (`id_consulta_especialista` int NOT NULL AUTO_INCREMENT, `titulo` varchar(255) NULL, `descripcion` text NOT NULL, `fecha_consulta` datetime NOT NULL, `fecha` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `expedienteIdExpediente` int NULL, `tipoConsultaIdTipoConsulta` int NULL, `notaPadreIdConsultaEspecialista` int NULL, PRIMARY KEY (`id_consulta_especialista`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `libro_campo` (`id_libro_campo` int NOT NULL AUTO_INCREMENT, `fecha_actividad` datetime NOT NULL, `problematica_abordada` text NOT NULL, `descripcion` text NOT NULL, `acuerdo_alcanzado` text NOT NULL, `fecha` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `expedienteIdExpediente` int NOT NULL, `notaPadreIdLibroCampo` int NULL, PRIMARY KEY (`id_libro_campo`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `historial_patologias` (`id` int NOT NULL AUTO_INCREMENT, `estado` varchar(255) NOT NULL DEFAULT 'activo', `fecha_registro` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `residenteIdExpediente` int NULL, `patologiaIdPatologia` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `historial_curaciones` (`id` int NOT NULL AUTO_INCREMENT, `titulo` varchar(255) NOT NULL, `descripcion` varchar(255) NOT NULL, `fecha_curacion` datetime NOT NULL, `fecha_registro` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `residenteIdExpediente` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `salida_residente` (`id_salida` int NOT NULL AUTO_INCREMENT, `parentesco` varchar(255) NOT NULL, `nombre_familiar` varchar(255) NOT NULL, `apellido1_familiar` varchar(255) NOT NULL, `apellido2_familiar` varchar(255) NOT NULL, `fecha_salida` date NOT NULL, `hora_salida` time NOT NULL, `fecha_regreso` date NOT NULL, `hora_regreso` time NOT NULL, `id_expediente` int NOT NULL, PRIMARY KEY (`id_salida`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `expediente_residente` (`id_expediente` int NOT NULL AUTO_INCREMENT, `tipo_pension` varchar(255) NOT NULL, `fecha_ingreso` datetime NOT NULL, `estado` enum ('Activo', 'Inactivo') NOT NULL DEFAULT 'Activo', `fecha_cierre` datetime NULL, `usuario_cierre` varchar(255) NULL, `residenteIdAdultoMayor` int NULL, UNIQUE INDEX `REL_0ca5e46b4ef04c0f55c692cdc5` (`residenteIdAdultoMayor`), PRIMARY KEY (`id_expediente`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `administraciones_especiales` (`id_administracion_especial` int NOT NULL AUTO_INCREMENT, `cantidad` decimal(10,2) NOT NULL, `hora` time NOT NULL, `unidadIdUnidad` int NULL, `expedienteIdExpediente` int NULL, `medicamentoIdMedicamento` int NULL, PRIMARY KEY (`id_administracion_especial`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `subcategoria_producto` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `producto` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `codigo` varchar(255) NOT NULL, `archivado` tinyint NULL DEFAULT 0, `imagen_url` varchar(255) NULL, `categoriaTipo` enum ('Alimentos', 'Limpieza', 'Medicamentos') NOT NULL, `subcategoria_id` int NULL, UNIQUE INDEX `IDX_4ecaa777d3efc10b5a6327cfe4` (`codigo`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `permiso` (`id_permiso` int NOT NULL AUTO_INCREMENT, `modulo` varchar(100) NOT NULL, `seccion` varchar(100) NULL, `deletedAt` datetime(6) NULL, PRIMARY KEY (`id_permiso`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `accion` (`id_accion` int NOT NULL AUTO_INCREMENT, `accion` varchar(255) NOT NULL, `deletedAt` datetime(6) NULL, PRIMARY KEY (`id_accion`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `rol_permiso_accion` (`id` int NOT NULL AUTO_INCREMENT, `rol_id` int NULL, `permiso_id` int NULL, `accion_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `rol_usuario` (`id_rol` int NOT NULL AUTO_INCREMENT, `nombre` varchar(500) NOT NULL, `descripcion` varchar(500) NOT NULL, `estado` tinyint NOT NULL DEFAULT 1, `deletedAt` datetime(6) NULL, PRIMARY KEY (`id_rol`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `usuario` (`id` int NOT NULL AUTO_INCREMENT, `cedula` varchar(500) NOT NULL, `email` varchar(255) NOT NULL, `name` varchar(255) NOT NULL, `apellido1` varchar(255) NOT NULL, `apellido2` varchar(255) NULL, `password` varchar(255) NOT NULL, `refreshToken` text NULL, `estado` enum ('activo', 'inactivo') NOT NULL DEFAULT 'activo', `imagenUrl` varchar(255) NULL, `deletedAt` datetime(6) NULL, `createdAt` timestamp(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `rolIdRol` int NOT NULL, UNIQUE INDEX `IDX_2863682842e688ca198eb25c12` (`email`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `entrada` (`id` int NOT NULL AUTO_INCREMENT, `fechaEntrada` timestamp NOT NULL, `cantidad` int NOT NULL, `usuario_responsable_id` int NULL, `fecha_registro` datetime NULL, `inventario_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `salida` (`id` int NOT NULL AUTO_INCREMENT, `fechaSalida` timestamp NOT NULL, `cantidad` int NOT NULL, `usuario_responsable_id` int NULL, `fecha_registro` datetime NULL, `inventario_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `inventario` (`id` int NOT NULL AUTO_INCREMENT, `stock` int NOT NULL, `sede` enum ('hogar', 'cecuidam') NOT NULL DEFAULT 'hogar', `archivado` tinyint NOT NULL DEFAULT 0, `producto_id` int NULL, `unidad_medida_id` int NULL, UNIQUE INDEX `UQ_inventario_producto_sede` (`producto_id`, `sede`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `unidad_medida` (`id_unidad` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `abreviatura` varchar(255) NOT NULL, `tipo` enum ('PRODUCTOS', 'MEDICAMENTOS', 'DOSIS') NOT NULL, PRIMARY KEY (`id_unidad`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `dato_funcional_nutricion` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(150) NOT NULL, `activo` tinyint NOT NULL DEFAULT 1, UNIQUE INDEX `IDX_65863bc144ccddbc280e707fb9` (`nombre`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `antecedente_personal` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(150) NOT NULL, `activo` tinyint NOT NULL DEFAULT 1, UNIQUE INDEX `IDX_b817f3444ee8b0cece5a5eeec9` (`nombre`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `tipo_antecedente_traumatico` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(150) NOT NULL, `activo` tinyint NOT NULL DEFAULT 1, UNIQUE INDEX `IDX_739743d8e38d317054b33251f2` (`nombre`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `tipo_evento_importante` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(150) NOT NULL, `activo` tinyint NOT NULL DEFAULT 1, UNIQUE INDEX `IDX_e51afe6a7721de82fa6d1d5917` (`nombre`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `ejercicio_test_movimiento` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(150) NOT NULL, `activo` tinyint NOT NULL DEFAULT 1, UNIQUE INDEX `IDX_a5d0678dba3166edb5630c9a47` (`nombre`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `valoracion_fisioterapeutica` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `usuario_responsable_id` int NOT NULL, `estado` enum ('borrador', 'vigente', 'reemplazada') NOT NULL DEFAULT 'borrador', `otrosDiagnosticos` text NULL, `antecedentesCaidas` tinyint NOT NULL DEFAULT 0, `detalleCaidas` text NULL, `usoAyudasBiomecanicas` tinyint NOT NULL DEFAULT 0, `detalleAyudasBiomecanicas` text NULL, `presentaDolor` tinyint NOT NULL DEFAULT 0, `zonaDolorosa` varchar(255) NULL, `caracteristicasDolor` text NULL, `direccionIrradiacion` varchar(255) NULL, `intensidadDolor` tinyint NULL, `orientacionPersona` tinyint NOT NULL DEFAULT 1, `orientacionEspacio` tinyint NOT NULL DEFAULT 1, `orientacionTiempo` tinyint NOT NULL DEFAULT 1, `conscienteOrientado` tinyint NOT NULL DEFAULT 1, `cambiosConductuales` text NULL, `estadosAnimo` text NULL, `rangoMovimiento` text NULL, `fuerzaMuscularDinamometria` text NULL, `postura` text NULL, `riesgoUlcera` text NULL, `diagnosticoDiferencial` text NULL, `tratamiento` text NULL, `avances` text NULL, INDEX `idx_valoracion_tf_expediente_fecha` (`expediente_id`, `fecha`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `valoracion_tf_antecedente_personal` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `valoracion_id` int NOT NULL, `antecedente_id` int NOT NULL, `presente` tinyint NOT NULL, `observacion` text NULL, UNIQUE INDEX `uq_valoracion_tf_antecedente` (`valoracion_id`, `antecedente_id`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `evento_importante_tf` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fechaHora` datetime NOT NULL, `tipo_evento_id` int NOT NULL, `descripcion` text NULL, INDEX `idx_evento_importante_tf_expediente_fecha` (`expediente_id`, `fechaHora`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `evaluacion_tinetti` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `edadMomentoEvaluacion` int NOT NULL, `usuario_examinador_id` int NOT NULL, `numero_control` int NOT NULL, `equilibrioSentado` tinyint NOT NULL, `levantarse` tinyint NOT NULL, `intentosLevantarse` tinyint NOT NULL, `equilibrioInmediato` tinyint NOT NULL, `equilibrioEnPie` tinyint NOT NULL, `empujon` tinyint NOT NULL, `ojosCerrados` tinyint NOT NULL, `giro360Continuidad` tinyint NOT NULL, `giro360Estabilidad` tinyint NOT NULL, `sentarse` tinyint NOT NULL, `inicioMarcha` tinyint NOT NULL, `longitudPasoDerecho` tinyint NOT NULL, `alturaPasoDerecho` tinyint NOT NULL, `longitudPasoIzquierdo` tinyint NOT NULL, `alturaPasoIzquierdo` tinyint NOT NULL, `simetriaPaso` tinyint NOT NULL, `continuidadPasos` tinyint NOT NULL, `trayectoria` tinyint NOT NULL, `tronco` tinyint NOT NULL, `posturaMarcha` tinyint NOT NULL, `puntajeEquilibrio` tinyint NOT NULL, `puntajeMarcha` tinyint NOT NULL, `puntajeTotal` tinyint NOT NULL, `riesgoCaida` varchar(40) NOT NULL, `versionInstrumento` varchar(30) NOT NULL, `observaciones` text NULL, INDEX `idx_evaluacion_tinetti_expediente_fecha` (`expediente_id`, `fecha`), UNIQUE INDEX `uq_evaluacion_tinetti_expediente_control` (`expediente_id`, `numero_control`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `evaluacion_barthel` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `usuario_examinador_id` int NOT NULL, `comer` tinyint NOT NULL, `lavarse` tinyint NOT NULL, `vestirse` tinyint NOT NULL, `arreglarse` tinyint NOT NULL, `deposiciones` tinyint NOT NULL, `miccion` tinyint NOT NULL, `usarRetrete` tinyint NOT NULL, `trasladarse` tinyint NOT NULL, `deambular` tinyint NOT NULL, `escalones` tinyint NOT NULL, `puntajeTotal` tinyint NOT NULL, `gradoDependencia` varchar(60) NOT NULL, `versionInstrumento` varchar(30) NOT NULL, `observaciones` text NULL, INDEX `idx_evaluacion_barthel_expediente_fecha` (`expediente_id`, `fecha`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `aplicacion_test_movimiento` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `usuario_responsable_id` int NOT NULL, INDEX `idx_aplicacion_test_movimiento_expediente_fecha` (`expediente_id`, `fecha`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `aplicacion_test_movimiento_ejercicio` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `id` int NOT NULL AUTO_INCREMENT, `aplicacion_id` int NOT NULL, `ejercicio_id` int NOT NULL, `modalidad` varchar(255) NOT NULL, `modificacion` varchar(255) NULL, `resultado` varchar(255) NOT NULL, UNIQUE INDEX `uq_aplicacion_test_ejercicio` (`aplicacion_id`, `ejercicio_id`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `antecedente_traumatico` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `valoracion_id` int NOT NULL, `tipo_id` int NOT NULL, `descripcion` text NULL, `localizacionAnatomica` varchar(255) NULL, `tiempoTranscurrido` varchar(255) NULL, INDEX `idx_antecedente_traumatico_valoracion` (`valoracion_id`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `solicitud_donacion_pendiente` (`id` int NOT NULL AUTO_INCREMENT, `cedula` varchar(255) NOT NULL, `nombre` varchar(255) NOT NULL, `apellido1` varchar(255) NOT NULL, `apellido2` varchar(255) NULL, `telefono` varchar(255) NOT NULL, `email` varchar(255) NOT NULL, `anonimo` tinyint NULL DEFAULT 0, `descripcion` varchar(255) NOT NULL, `tipoDonacion` varchar(255) NOT NULL, `estado` varchar(255) NOT NULL DEFAULT 'pendiente', `creadoEn` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `observaciones` varchar(255) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `donador` (`id` int NOT NULL AUTO_INCREMENT, `cedula` varchar(255) NOT NULL, `nombre` varchar(50) NOT NULL, `apellido1` varchar(50) NOT NULL, `apellido2` varchar(50) NULL, `telefono` varchar(20) NOT NULL, `email` varchar(100) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `registro_donacion` (`id` int NOT NULL AUTO_INCREMENT, `aprobadaPor` varchar(100) NULL, `aprobadaEn` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `observaciones` varchar(100) NULL, `recibida` tinyint NOT NULL DEFAULT 0, `recibidaEn` timestamp NULL, `recibidaPor` varchar(255) NOT NULL, `anonimo` tinyint NOT NULL DEFAULT 0, `tipoDonacion` varchar(255) NOT NULL, `descripcion` varchar(255) NULL, `idSolicitud` int NULL, `donador_id` int NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `proyectos` (`id` int NOT NULL AUTO_INCREMENT, `fecha` date NOT NULL, `Titulo` varchar(255) NOT NULL, `Descripcion` varchar(255) NOT NULL, `imagenUrl` varchar(255) NULL, `isActive` tinyint NOT NULL DEFAULT 1, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `eventos` (`id` int NOT NULL AUTO_INCREMENT, `fecha` date NOT NULL, `Titulo` varchar(255) NOT NULL, `Descripcion` varchar(255) NOT NULL, `imagenUrl` varchar(255) NULL, `isActive` tinyint NOT NULL DEFAULT 1, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `donacion` (`id` int NOT NULL AUTO_INCREMENT, `fecha` date NOT NULL, `Titulo` varchar(255) NOT NULL, `Descripcion` varchar(255) NOT NULL, `imagenUrl` varchar(255) NULL, `isActive` tinyint NOT NULL DEFAULT 1, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `valoracion_nutricional` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `usuario_responsable_id` int NOT NULL, `estado` enum ('borrador', 'vigente', 'reemplazada') NOT NULL DEFAULT 'borrador', `problemaVisual` tinyint NOT NULL DEFAULT 0, `problemaCavidadOral` tinyint NOT NULL DEFAULT 0, `alergiaMedicamentos` tinyint NOT NULL DEFAULT 0, `detalleAlergiaMedicamentos` text NULL, `dato_funcional_id` int NULL, `estadoCognitivo` enum ('normal', 'con_deterioro') NOT NULL DEFAULT 'normal', `nivelDeterioroCognitivo` varchar(255) NULL, `depresion` tinyint NOT NULL DEFAULT 0, `ansiedad` tinyint NOT NULL DEFAULT 0, INDEX `idx_valoracion_nutricional_expediente_fecha` (`expediente_id`, `fecha`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `control_nutricional` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `edadMomentoControl` int NOT NULL, `peso` decimal(5,1) NOT NULL, `talla` decimal(5,1) NOT NULL, `circunferenciaBraquial` decimal(5,1) NULL, `circunferenciaPantorrilla` decimal(5,1) NULL, `alturaRodilla` decimal(5,1) NULL, `fuerzaMuscular` decimal(5,1) NULL, `imc` decimal(5,1) NOT NULL, `interpretacion` text NULL, INDEX `idx_control_nutricional_expediente_fecha` (`expediente_id`, `fecha`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `evaluacion_mna` (`creadoPorId` int NULL, `fechaCreacion` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `modificadoPorId` int NULL, `fechaModificacion` datetime(6) NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `anulado` tinyint NOT NULL DEFAULT 0, `motivoAnulacion` text NULL, `anulado_por_id` int NULL, `fechaAnulacion` datetime NULL, `id` int NOT NULL AUTO_INCREMENT, `expediente_id` int NOT NULL, `fecha` date NOT NULL, `usuario_responsable_id` int NOT NULL, `control_nutricional_id` int NULL, `itemA` tinyint NOT NULL, `itemB` tinyint NOT NULL, `itemC` tinyint NOT NULL, `itemD` tinyint NOT NULL, `itemE` tinyint NOT NULL, `itemF` tinyint NOT NULL, `subtotalCribaje` decimal(3,1) NOT NULL, `interpretacionCribaje` varchar(100) NOT NULL, `itemG` tinyint NULL, `itemH` tinyint NULL, `itemI` tinyint NULL, `itemJ` tinyint NULL, `itemK` decimal(2,1) NULL, `itemL` tinyint NULL, `itemM` decimal(2,1) NULL, `itemN` tinyint NULL, `itemO` tinyint NULL, `itemP` decimal(2,1) NULL, `itemQ` decimal(2,1) NULL, `itemR` tinyint NULL, `subtotalEvaluacion` decimal(3,1) NULL, `evaluacionGlobal` decimal(3,1) NULL, `interpretacionGlobal` varchar(60) NULL, `versionInstrumento` varchar(30) NOT NULL, INDEX `idx_evaluacion_mna_expediente_fecha` (`expediente_id`, `fecha`), PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `galeria` (`id` int NOT NULL AUTO_INCREMENT, `imagenUrl` varchar(255) NULL, `isActive` tinyint NOT NULL DEFAULT 1, `categoriaId` int NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `categoria` (`id` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `descripcion` varchar(255) NOT NULL, `isActive` tinyint NOT NULL DEFAULT 1, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `factura` (`id_factura` int NOT NULL AUTO_INCREMENT, `numero_factura` int NOT NULL, `fecha_emitida` datetime NOT NULL, `fecha_pago` datetime NOT NULL, `fecha_pagada` datetime NULL, `monto` decimal(10,2) NOT NULL, `estado` enum ('pagada', 'pendiente') NOT NULL DEFAULT 'pendiente', `sede` enum ('hogar', 'cecuidam') NOT NULL DEFAULT 'hogar', `proveedorIdProveedor` int NULL, INDEX `idx_factura_numero` (`numero_factura`), PRIMARY KEY (`id_factura`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `area` (`id_area` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `estado` enum ('activo', 'inactivo') NOT NULL DEFAULT 'activo', PRIMARY KEY (`id_area`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `proveedor` (`id_proveedor` int NOT NULL AUTO_INCREMENT, `nombre` varchar(255) NOT NULL, `numero` varchar(255) NOT NULL, `correo` varchar(255) NOT NULL, `direccion` varchar(255) NOT NULL, `estado` enum ('activo', 'inactivo') NOT NULL, `areaIdArea` int NULL, PRIMARY KEY (`id_proveedor`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `password_edus` (`id_password` int NOT NULL AUTO_INCREMENT, `password` varchar(255) NOT NULL, PRIMARY KEY (`id_password`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `residente_encargado` (`residenteIdAdultoMayor` int NOT NULL, `encargadoId` int NOT NULL, INDEX `IDX_c9e73025cceb70e9674d4b76e3` (`residenteIdAdultoMayor`), INDEX `IDX_cd90b27d75dbe895b44cfd6c1a` (`encargadoId`), PRIMARY KEY (`residenteIdAdultoMayor`, `encargadoId`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "CREATE TABLE `expediente_residente_patologias_patologias` (`expedienteResidenteIdExpediente` int NOT NULL, `patologiasIdPatologia` int NOT NULL, INDEX `IDX_626a13a7e1fb3dbfca8f04a26c` (`expedienteResidenteIdExpediente`), INDEX `IDX_48b5a8a9f9bff58d04ebac8de2` (`patologiasIdPatologia`), PRIMARY KEY (`expedienteResidenteIdExpediente`, `patologiasIdPatologia`)) ENGINE=InnoDB"
+  },
+  {
+    "query": "ALTER TABLE `horarios` ADD CONSTRAINT `FK_b42b250c525bfd816e5cd29b011` FOREIGN KEY (`solicitud_aprobada_id`) REFERENCES `solicitud_aprobada`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `actividades` ADD CONSTRAINT `FK_666ac62a58633e8dbeae80db5f2` FOREIGN KEY (`solicitud_aprobada_id`) REFERENCES `solicitud_aprobada`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `solicitud_aprobada` ADD CONSTRAINT `FK_a4917cb6af5caadb027b2069c9a` FOREIGN KEY (`voluntario_id`) REFERENCES `voluntario`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `solicitud_aprobada` ADD CONSTRAINT `FK_f86eab4c071d5f10882131ef1b1` FOREIGN KEY (`tipo_voluntariado_id`) REFERENCES `tipo_voluntariado`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `contacto_emergencia` ADD CONSTRAINT `FK_06653287f8430ffc2333873a869` FOREIGN KEY (`voluntario_id`) REFERENCES `voluntario`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `contacto_emergencia_pendiente` ADD CONSTRAINT `FK_b35abfc26c3be43e12dfca063b7` FOREIGN KEY (`solicitudPendienteId`) REFERENCES `solicitud_pendiente`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `horario_pendiente` ADD CONSTRAINT `FK_dbc5d6bb598393ed114e28f0602` FOREIGN KEY (`solicitudPendienteId`) REFERENCES `solicitud_pendiente`(`id`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `entrada_medicamento` ADD CONSTRAINT `FK_3b5de6dbf8f3b942b70a574d5d1` FOREIGN KEY (`unidad_medida_id`) REFERENCES `unidad_medida`(`id_unidad`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `entrada_medicamento` ADD CONSTRAINT `FK_7fe4021e6faaf84a1bacc86a8c4` FOREIGN KEY (`medicamento_id`) REFERENCES `medicamentos`(`id_medicamento`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administracion_medicamento` ADD CONSTRAINT `FK_5c0f6c8426527162181184eef40` FOREIGN KEY (`administracionIdAdministracion`) REFERENCES `administraciones`(`id_administracion`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administracion_medicamento` ADD CONSTRAINT `FK_2806c2fa6e642af3cb5016af350` FOREIGN KEY (`medicamentoIdMedicamento`) REFERENCES `medicamentos`(`id_medicamento`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administracion_medicamento` ADD CONSTRAINT `FK_72572d5e26cdaa7fa791f743e66` FOREIGN KEY (`unidadIdUnidad`) REFERENCES `unidad_medida`(`id_unidad`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administraciones` ADD CONSTRAINT `FK_04128b1cda8bf4321a2fba5a54a` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `nota_enfermeria` ADD CONSTRAINT `FK_5e6aa4f903000027f37a49f8de6` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `nota_enfermeria` ADD CONSTRAINT `FK_51a3ae0cfa057d63517370f833d` FOREIGN KEY (`notaPadreId`) REFERENCES `nota_enfermeria`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `curaciones` ADD CONSTRAINT `FK_1dd5fbbf067f15cfc719a0c8a9a` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `curaciones` ADD CONSTRAINT `FK_218245c39d2b19a1d5ecc99dbc1` FOREIGN KEY (`notaPadreIdCuracion`) REFERENCES `curaciones`(`id_curacion`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `consulta_ebais` ADD CONSTRAINT `FK_c8bf28e50a0f5f8af7cdf63448b` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `consulta_ebais` ADD CONSTRAINT `FK_2f926c9deb6c20765b6d75c208a` FOREIGN KEY (`notaPadreIdConsultaEbais`) REFERENCES `consulta_ebais`(`id_consulta_ebais`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `consulta_especialista` ADD CONSTRAINT `FK_4192c7e419f0e99373fce00410c` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `consulta_especialista` ADD CONSTRAINT `FK_e1bae1ccac856a898cdb8ae7d22` FOREIGN KEY (`tipoConsultaIdTipoConsulta`) REFERENCES `tipo_consulta`(`id_tipo_consulta`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `consulta_especialista` ADD CONSTRAINT `FK_7e10c3432b183e647275f1f6720` FOREIGN KEY (`notaPadreIdConsultaEspecialista`) REFERENCES `consulta_especialista`(`id_consulta_especialista`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `libro_campo` ADD CONSTRAINT `FK_0807d250cd163b7df2d9790c7a7` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `libro_campo` ADD CONSTRAINT `FK_a2435a9bbe1e2ff1ad7fc3d1b4d` FOREIGN KEY (`notaPadreIdLibroCampo`) REFERENCES `libro_campo`(`id_libro_campo`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `historial_patologias` ADD CONSTRAINT `FK_c3b0da4117640f95d081f2b449d` FOREIGN KEY (`residenteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `historial_patologias` ADD CONSTRAINT `FK_781e77111acf0ff7f674ad3c2c4` FOREIGN KEY (`patologiaIdPatologia`) REFERENCES `patologias`(`id_patologia`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `historial_curaciones` ADD CONSTRAINT `FK_baaae09d6045c285a9d8d69831b` FOREIGN KEY (`residenteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `salida_residente` ADD CONSTRAINT `FK_96b32b4dd733589128d57e099f1` FOREIGN KEY (`id_expediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `expediente_residente` ADD CONSTRAINT `FK_0ca5e46b4ef04c0f55c692cdc53` FOREIGN KEY (`residenteIdAdultoMayor`) REFERENCES `residente`(`id_adulto_mayor`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administraciones_especiales` ADD CONSTRAINT `FK_7d71371a119c7d1c185c06ae9a9` FOREIGN KEY (`unidadIdUnidad`) REFERENCES `unidad_medida`(`id_unidad`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administraciones_especiales` ADD CONSTRAINT `FK_aa5d3c253196ef45507983f5e09` FOREIGN KEY (`expedienteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `administraciones_especiales` ADD CONSTRAINT `FK_b588fd69d187df87344d3e55819` FOREIGN KEY (`medicamentoIdMedicamento`) REFERENCES `medicamentos`(`id_medicamento`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `producto` ADD CONSTRAINT `FK_50825f004d320a51cd598290b3f` FOREIGN KEY (`subcategoria_id`) REFERENCES `subcategoria_producto`(`id`) ON DELETE SET NULL ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `rol_permiso_accion` ADD CONSTRAINT `FK_963f03a057a23aaaebd88866a63` FOREIGN KEY (`rol_id`) REFERENCES `rol_usuario`(`id_rol`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `rol_permiso_accion` ADD CONSTRAINT `FK_98c4549de3e9409fecacc62d25c` FOREIGN KEY (`permiso_id`) REFERENCES `permiso`(`id_permiso`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `rol_permiso_accion` ADD CONSTRAINT `FK_b1f8f7840389a4e6982cbc9ae81` FOREIGN KEY (`accion_id`) REFERENCES `accion`(`id_accion`) ON DELETE CASCADE ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `usuario` ADD CONSTRAINT `FK_eb1420806973a412e1145c27e61` FOREIGN KEY (`rolIdRol`) REFERENCES `rol_usuario`(`id_rol`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `entrada` ADD CONSTRAINT `FK_88ac92be80ab06676a755c789eb` FOREIGN KEY (`usuario_responsable_id`) REFERENCES `usuario`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `entrada` ADD CONSTRAINT `FK_235475db73c82c0fa44e876a91c` FOREIGN KEY (`inventario_id`) REFERENCES `inventario`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `salida` ADD CONSTRAINT `FK_530b1b2138a33835707aae83ee1` FOREIGN KEY (`usuario_responsable_id`) REFERENCES `usuario`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `salida` ADD CONSTRAINT `FK_e45c676ba0dc28189c7de270376` FOREIGN KEY (`inventario_id`) REFERENCES `inventario`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `inventario` ADD CONSTRAINT `FK_d2819ea354c9dd7a89ac7197a86` FOREIGN KEY (`producto_id`) REFERENCES `producto`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `inventario` ADD CONSTRAINT `FK_c5de10aadfb9213a98974597372` FOREIGN KEY (`unidad_medida_id`) REFERENCES `unidad_medida`(`id_unidad`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `valoracion_fisioterapeutica` ADD CONSTRAINT `FK_66e64941f5afacaa9dd1e78dcb6` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `valoracion_tf_antecedente_personal` ADD CONSTRAINT `FK_f4cef4c48d4c1575a7a9e944989` FOREIGN KEY (`valoracion_id`) REFERENCES `valoracion_fisioterapeutica`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `valoracion_tf_antecedente_personal` ADD CONSTRAINT `FK_3c5abc99ac6d0f7dc40354195eb` FOREIGN KEY (`antecedente_id`) REFERENCES `antecedente_personal`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `evento_importante_tf` ADD CONSTRAINT `FK_0bd11be2c4b1aba8377d4fb2f22` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `evento_importante_tf` ADD CONSTRAINT `FK_fe848591a446a6874c147ff3683` FOREIGN KEY (`tipo_evento_id`) REFERENCES `tipo_evento_importante`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `evaluacion_tinetti` ADD CONSTRAINT `FK_623110037e627ac078917223ec8` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `evaluacion_barthel` ADD CONSTRAINT `FK_db5b6cfe971f65c5147abb9bc5e` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `aplicacion_test_movimiento` ADD CONSTRAINT `FK_b5868648acf3ee22264ad3c642a` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `aplicacion_test_movimiento_ejercicio` ADD CONSTRAINT `FK_daa8acb7a46f37ff366f8f59d25` FOREIGN KEY (`aplicacion_id`) REFERENCES `aplicacion_test_movimiento`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `aplicacion_test_movimiento_ejercicio` ADD CONSTRAINT `FK_8d3fcc823b2674e6b4964ed60eb` FOREIGN KEY (`ejercicio_id`) REFERENCES `ejercicio_test_movimiento`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `antecedente_traumatico` ADD CONSTRAINT `FK_561b47519bfa615e08354d2f664` FOREIGN KEY (`valoracion_id`) REFERENCES `valoracion_fisioterapeutica`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `antecedente_traumatico` ADD CONSTRAINT `FK_f91a1ca7a924bf2a1c8b6e1d738` FOREIGN KEY (`tipo_id`) REFERENCES `tipo_antecedente_traumatico`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `registro_donacion` ADD CONSTRAINT `FK_3dd84ee9a2b6479b0297daef5b0` FOREIGN KEY (`donador_id`) REFERENCES `donador`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `valoracion_nutricional` ADD CONSTRAINT `FK_5e95015fe2b632af5c6ca9fc358` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `valoracion_nutricional` ADD CONSTRAINT `FK_02f71ef7d3a06681efa859d2020` FOREIGN KEY (`dato_funcional_id`) REFERENCES `dato_funcional_nutricion`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `control_nutricional` ADD CONSTRAINT `FK_172de62d7dd7f9bcc11f0868ffb` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `evaluacion_mna` ADD CONSTRAINT `FK_e4a3f58b770b1c06635486c5b66` FOREIGN KEY (`expediente_id`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `evaluacion_mna` ADD CONSTRAINT `FK_76c6d00ac73a868b52209b0987f` FOREIGN KEY (`control_nutricional_id`) REFERENCES `control_nutricional`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `galeria` ADD CONSTRAINT `FK_138cef6642b8d57dee0e9ca837e` FOREIGN KEY (`categoriaId`) REFERENCES `categoria`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `factura` ADD CONSTRAINT `FK_c3fa70b1659235330f12bd610f2` FOREIGN KEY (`proveedorIdProveedor`) REFERENCES `proveedor`(`id_proveedor`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `proveedor` ADD CONSTRAINT `FK_0ba94838226f67cd5f860288d5a` FOREIGN KEY (`areaIdArea`) REFERENCES `area`(`id_area`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `residente_encargado` ADD CONSTRAINT `FK_c9e73025cceb70e9674d4b76e39` FOREIGN KEY (`residenteIdAdultoMayor`) REFERENCES `residente`(`id_adulto_mayor`) ON DELETE CASCADE ON UPDATE CASCADE"
+  },
+  {
+    "query": "ALTER TABLE `residente_encargado` ADD CONSTRAINT `FK_cd90b27d75dbe895b44cfd6c1a2` FOREIGN KEY (`encargadoId`) REFERENCES `encargado`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  },
+  {
+    "query": "ALTER TABLE `expediente_residente_patologias_patologias` ADD CONSTRAINT `FK_626a13a7e1fb3dbfca8f04a26c3` FOREIGN KEY (`expedienteResidenteIdExpediente`) REFERENCES `expediente_residente`(`id_expediente`) ON DELETE CASCADE ON UPDATE CASCADE"
+  },
+  {
+    "query": "ALTER TABLE `expediente_residente_patologias_patologias` ADD CONSTRAINT `FK_48b5a8a9f9bff58d04ebac8de29` FOREIGN KEY (`patologiasIdPatologia`) REFERENCES `patologias`(`id_patologia`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+  }
+]
